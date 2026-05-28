@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Grade Quest">
+<title>Grade Quest ⭐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --hot-pink: #E91E8C;
+  --pink-light: #FFD6EC;
+  --pink-mid: #FF69B4;
+  --gold: #FFB800;
+  --gold-light: #FFF3C0;
+  --purple: #8B5CF6;
+  --purple-light: #EDE9FE;
+  --teal: #06B6D4;
+  --teal-light: #CFFAFE;
+  --green: #22C55E;
+  --green-light: #DCFCE7;
+  --bg: #FFF5FB;
+  --card: #FFFFFF;
+  --text: #1A1A2E;
+  --muted: #6B7280;
+  --border: rgba(233,30,140,0.15);
+}
+html, body { height: 100%; background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); overscroll-behavior: none; }
+.app { max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+.screen { display: none; flex: 1; overflow-y: auto; padding: 16px 16px 80px; }
+.screen.active { display: block; }
+
+/* HOME */
+.home-header { text-align: center; padding: 12px 0 6px; }
+.app-title { font-family: 'Fredoka One', cursive; font-size: 34px; color: var(--hot-pink); line-height: 1; }
+.app-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+.character-card {
+  background: linear-gradient(135deg, #FFD6EC 0%, #EDE9FE 100%);
+  border-radius: 20px; padding: 16px; margin: 12px 0;
+  display: flex; align-items: center; gap: 14px;
+  border: 1.5px solid var(--border);
+}
+.character-avatar { width: 72px; height: 72px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 36px; border: 2px solid var(--pink-mid); flex-shrink: 0; cursor: pointer; }
+.character-info { flex: 1; }
+.character-name { font-weight: 800; font-size: 18px; color: var(--hot-pink); }
+.character-level { font-size: 12px; color: var(--purple); font-weight: 700; margin: 2px 0 6px; }
+.xp-bar-wrap { background: rgba(255,255,255,0.7); border-radius: 20px; height: 10px; overflow: hidden; }
+.xp-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--hot-pink), var(--purple)); transition: width 0.6s ease; }
+.xp-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0; }
+.stat-card { background: var(--card); border-radius: 14px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
+.stat-num { font-family: 'Fredoka One', cursive; font-size: 22px; }
+.stat-label { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+
+.quest-card { background: var(--card); border-radius: 18px; border: 2px solid var(--gold); padding: 14px; margin: 10px 0; }
+.quest-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.quest-badge { background: var(--gold-light); color: #92400E; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 20px; }
+.quest-title { font-weight: 800; font-size: 15px; }
+.quest-options { display: flex; flex-direction: column; gap: 8px; }
+.quest-btn { background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.15s; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); width: 100%; }
+.quest-btn:hover, .quest-btn:active { border-color: var(--hot-pink); background: var(--pink-light); }
+.quest-icon { font-size: 22px; }
+.quest-btn-meta { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+
+.badges-section { margin: 10px 0; }
+.section-title { font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 8px; }
+.badges-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge-item { background: var(--card); border-radius: 12px; padding: 8px 10px; text-align: center; border: 1px solid var(--border); min-width: 60px; }
+.badge-icon { font-size: 20px; }
+.badge-name { font-size: 9px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+.badge-item.locked { opacity: 0.35; filter: grayscale(1); }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 430px; margin: 0 auto; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 8px 0 env(safe-area-inset-bottom, 8px); z-index: 100; }
+.nav-btn { flex: 1; background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); padding: 4px; transition: color 0.15s; }
+.nav-btn.active { color: var(--hot-pink); }
+.nav-btn i { font-size: 22px; }
+
+/* QUIZ HEADER */
+.quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.back-btn { background: var(--card); border: 1px solid var(--border); border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+.quiz-progress-wrap { flex: 1; }
+.quiz-progress-bar { height: 8px; background: var(--pink-light); border-radius: 20px; overflow: hidden; }
+.quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--hot-pink), var(--purple)); border-radius: 20px; transition: width 0.4s; }
+.quiz-q-count { font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 3px; text-align: right; }
+
+.subject-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; }
+.tag-math { background: var(--teal-light); color: #0E7490; }
+.tag-reading { background: var(--purple-light); color: #6D28D9; }
+
+.question-card { background: var(--card); border-radius: 18px; padding: 18px; border: 1.5px solid var(--border); margin-bottom: 14px; }
+.question-text { font-size: 16px; font-weight: 700; line-height: 1.5; }
+.question-hint { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
+
+.answer-options { display: flex; flex-direction: column; gap: 10px; }
+.answer-btn { background: var(--card); border: 2px solid var(--border); border-radius: 14px; padding: 13px 16px; text-align: left; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); transition: all 0.15s; display: flex; align-items: center; gap: 10px; width: 100%; }
+.answer-btn:hover:not(:disabled), .answer-btn:active:not(:disabled) { border-color: var(--hot-pink); background: var(--pink-light); }
+.answer-btn.correct { border-color: var(--green); background: var(--green-light); color: #15803D; }
+.answer-btn.wrong { border-color: #EF4444; background: #FEE2E2; color: #B91C1C; }
+.answer-btn:disabled { cursor: default; }
+.answer-letter { width: 26px; height: 26px; border-radius: 50%; background: var(--pink-light); color: var(--hot-pink); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; flex-shrink: 0; }
+.answer-btn.correct .answer-letter { background: var(--green-light); color: #15803D; }
+.answer-btn.wrong .answer-letter { background: #FEE2E2; color: #B91C1C; }
+
+.feedback-card { border-radius: 14px; padding: 12px 14px; margin: 10px 0; font-size: 14px; font-weight: 700; display: none; }
+.feedback-card.correct { background: var(--green-light); color: #15803D; border: 1.5px solid #86EFAC; }
+.feedback-card.wrong { background: #FEE2E2; color: #B91C1C; border: 1.5px solid #FCA5A5; }
+.feedback-card.show { display: block; }
+
+.next-btn { width: 100%; padding: 14px; background: var(--hot-pink); color: white; border: none; border-radius: 14px; font-family: 'Fredoka One', cursive; font-size: 18px; cursor: pointer; margin-top: 8px; display: none; }
+.next-btn.show { display: block; }
+
+/* SPEED DRILL */
+.drill-card { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%); border-radius: 20px; padding: 24px; text-align: center; margin-bottom: 14px; }
+.drill-problem { font-family: 'Fredoka One', cursive; font-size: 52px; color: white; line-height: 1.1; }
+.drill-streak-label { font-size: 12px; color: var(--gold); font-weight: 800; margin-top: 6px; }
+.drill-timer-ring { width: 60px; height: 60px; margin: 10px auto; position: relative; }
+.drill-timer-ring svg { transform: rotate(-90deg); }
+.timer-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 4; }
+.timer-fill { fill: none; stroke: var(--gold); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.1s; }
+.timer-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Fredoka One', cursive; font-size: 18px; color: white; }
+.drill-input-display { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; font-family: 'Fredoka One', cursive; font-size: 32px; color: white; min-height: 52px; letter-spacing: 3px; margin: 10px 0; }
+
+.num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.num-key { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 22px; cursor: pointer; transition: all 0.1s; color: var(--text); text-align: center; }
+.num-key:hover, .num-key:active { background: var(--pink-light); border-color: var(--hot-pink); }
+
+/* READING */
+.passage-card { background: var(--card); border-radius: 18px; padding: 16px; border: 1.5px solid var(--border); margin-bottom: 14px; max-height: 220px; overflow-y: auto; }
+.passage-title { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--purple); margin-bottom: 8px; }
+.passage-text { font-size: 14px; line-height: 1.75; }
+
+/* RESULTS */
+.results-screen { text-align: center; padding: 24px 16px 80px; }
+.results-emoji { font-size: 64px; margin-bottom: 8px; }
+.results-title { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--hot-pink); }
+.results-score { font-size: 18px; color: var(--muted); margin: 6px 0 16px; }
+.xp-gained { background: var(--gold-light); border: 2px solid var(--gold); border-radius: 16px; padding: 12px; margin: 12px 0; font-family: 'Fredoka One', cursive; font-size: 22px; color: #92400E; }
+.badge-earned-item { display: inline-flex; align-items: center; gap: 6px; background: var(--purple-light); color: var(--purple); border-radius: 20px; padding: 6px 12px; font-size: 13px; font-weight: 800; margin: 4px; }
+.home-btn { width: 100%; padding: 14px; background: var(--hot-pink); color: white; border: none; border-radius: 14px; font-family: 'Fredoka One', cursive; font-size: 18px; cursor: pointer; margin-top: 8px; }
+
+/* PARENT */
+.pin-screen { text-align: center; padding: 20px 16px; }
+.pin-title { font-family: 'Fredoka One', cursive; font-size: 22px; margin-bottom: 6px; }
+.pin-dots { display: flex; justify-content: center; gap: 12px; margin: 16px 0; }
+.pin-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--pink-light); border: 2px solid var(--pink-mid); transition: background 0.2s; }
+.pin-dot.filled { background: var(--hot-pink); border-color: var(--hot-pink); }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 240px; margin: 0 auto; }
+.pin-key { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; font-family: 'Fredoka One', cursive; font-size: 22px; cursor: pointer; color: var(--text); }
+.pin-key:hover { background: var(--pink-light); }
+.parent-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.parent-stat { background: var(--card); border-radius: 14px; padding: 12px; border: 1px solid var(--border); text-align: center; }
+.parent-stat-num { font-family: 'Fredoka One', cursive; font-size: 26px; }
+.parent-stat-label { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+.skill-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.skill-name { font-size: 12px; font-weight: 700; width: 110px; flex-shrink: 0; }
+.skill-bar-bg { flex: 1; height: 10px; background: var(--pink-light); border-radius: 20px; overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--hot-pink), var(--purple)); }
+.skill-pct { font-size: 12px; font-weight: 800; color: var(--hot-pink); width: 36px; text-align: right; }
+
+/* AI Loading */
+.ai-loading { text-align: center; padding: 40px 20px; }
+.ai-loading-emoji { font-size: 40px; animation: bounce 0.8s infinite alternate; }
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+.ai-loading-text { font-size: 14px; color: var(--muted); font-weight: 700; margin-top: 10px; }
+
+/* SETTINGS SCREEN */
+.settings-section { background: var(--card); border-radius: 16px; padding: 14px; border: 1px solid var(--border); margin: 10px 0; }
+.settings-label { font-size: 12px; color: var(--muted); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.settings-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); background: var(--bg); }
+.avatar-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.avatar-opt { font-size: 28px; cursor: pointer; background: var(--bg); border: 2px solid var(--border); border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.avatar-opt.selected { border-color: var(--hot-pink); background: var(--pink-light); transform: scale(1.1); }
+.save-btn { width: 100%; padding: 13px; background: var(--hot-pink); color: white; border: none; border-radius: 14px; font-family: 'Fredoka One', cursive; font-size: 18px; cursor: pointer; margin-top: 10px; }
+
+/* Toast */
+.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-80px); background: #1A1A2E; color: white; padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 800; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="app" id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="home-header">
+      <div class="app-title">⭐ Grade Quest</div>
+      <div class="app-subtitle">Level up for 4th grade!</div>
+    </div>
+    <div class="character-card">
+      <div class="character-avatar" id="char-avatar" onclick="navTo('settings')" title="Change avatar">🦄</div>
+      <div class="character-info">
+        <div class="character-name" id="char-name">Cheer Star</div>
+        <div class="character-level" id="char-level">⚡ Level 1 — Rising Star</div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-bar" style="width:10%"></div></div>
+        <div class="xp-label" id="xp-label">0 / 200 XP to next level</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--hot-pink)" id="stat-streak">0</div>
+        <div class="stat-label">🔥 Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--gold)" id="stat-stars">0</div>
+        <div class="stat-label">⭐ Stars</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--purple)" id="stat-badges">0</div>
+        <div class="stat-label">🏅 Badges</div>
+      </div>
+    </div>
+    <div class="quest-card">
+      <div class="quest-header">
+        <span class="quest-badge">✨ TODAY'S QUEST</span>
+        <span class="quest-title">Choose your mission!</span>
+      </div>
+      <div class="quest-options">
+        <button class="quest-btn" onclick="startDrill()">
+          <span class="quest-icon">⚡</span>
+          <div><div>Speed Drill — Times Tables</div><div class="quest-btn-meta">Beat your high score • Math</div></div>
+        </button>
+        <button class="quest-btn" onclick="startWordProblems()">
+          <span class="quest-icon">🐾</span>
+          <div><div>Word Problems</div><div class="quest-btn-meta">5 cheer &amp; animal problems • Math</div></div>
+        </button>
+        <button class="quest-btn" onclick="startReading()">
+          <span class="quest-icon">📖</span>
+          <div><div>Reading Quest</div><div class="quest-btn-meta">Story + comprehension • ELA</div></div>
+        </button>
+      </div>
+    </div>
+    <div class="badges-section">
+      <div class="section-title">🏅 My Badges</div>
+      <div class="badges-grid" id="badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- SPEED DRILL -->
+  <div class="screen" id="screen-drill">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div class="quiz-progress-wrap">
+        <div style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--hot-pink)">⚡ Speed Drill</div>
+        <div id="drill-streak-label" style="font-size:11px;color:var(--gold);font-weight:800">Streak: 0 🔥 | High Score: 0</div>
+      </div>
+    </div>
+    <div class="drill-card">
+      <div class="drill-timer-ring">
+        <svg viewBox="0 0 60 60" width="60" height="60">
+          <circle class="timer-bg" cx="30" cy="30" r="26"/>
+          <circle class="timer-fill" cx="30" cy="30" r="26" id="timer-circle" stroke-dasharray="163.4" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-num" id="timer-num">10</div>
+      </div>
+      <div class="drill-problem" id="drill-problem">7 × 8 = ?</div>
+      <div class="drill-input-display" id="drill-input">_</div>
+      <div class="drill-streak-label" id="drill-score-label">Score: 0</div>
+    </div>
+    <div class="num-pad">
+      <button class="num-key" onclick="drillKey('1')">1</button>
+      <button class="num-key" onclick="drillKey('2')">2</button>
+      <button class="num-key" onclick="drillKey('3')">3</button>
+      <button class="num-key" onclick="drillKey('4')">4</button>
+      <button class="num-key" onclick="drillKey('5')">5</button>
+      <button class="num-key" onclick="drillKey('6')">6</button>
+      <button class="num-key" onclick="drillKey('7')">7</button>
+      <button class="num-key" onclick="drillKey('8')">8</button>
+      <button class="num-key" onclick="drillKey('9')">9</button>
+      <button class="num-key" onclick="drillKey('0')">0</button>
+      <button class="num-key" onclick="drillKey('DEL')">⌫</button>
+      <button class="num-key" onclick="drillSubmit()" style="background:var(--hot-pink);color:white;border-color:var(--hot-pink)">✓</button>
+    </div>
+    <div class="feedback-card" id="drill-feedback"></div>
+  </div>
+
+  <!-- WORD PROBLEMS -->
+  <div class="screen" id="screen-word">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="word-prog" style="width:0%"></div></div>
+        <div class="quiz-q-count" id="word-count">Question 1 of 5</div>
+      </div>
+    </div>
+    <div id="word-ai-loading" class="ai-loading">
+      <div class="ai-loading-emoji">🐾</div>
+      <div class="ai-loading-text">Loading your problems...</div>
+    </div>
+    <div id="word-content" style="display:none">
+      <span class="subject-tag tag-math">🧮 Math — Word Problems</span>
+      <div class="question-card">
+        <div class="question-text" id="word-question"></div>
+        <div class="question-hint" id="word-hint"></div>
+      </div>
+      <div class="answer-options" id="word-answers"></div>
+      <div class="feedback-card" id="word-feedback"></div>
+      <button class="next-btn" id="word-next" onclick="nextWord()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- READING -->
+  <div class="screen" id="screen-reading">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="read-prog" style="width:0%"></div></div>
+        <div class="quiz-q-count" id="read-count">Reading...</div>
+      </div>
+    </div>
+    <div id="read-ai-loading" class="ai-loading">
+      <div class="ai-loading-emoji">📖</div>
+      <div class="ai-loading-text">Writing your story...</div>
+    </div>
+    <div id="read-content" style="display:none">
+      <span class="subject-tag tag-reading">📚 Reading — Comprehension</span>
+      <div class="passage-card">
+        <div class="passage-title" id="read-title"></div>
+        <div class="passage-text" id="read-passage"></div>
+      </div>
+      <div class="question-card">
+        <div class="question-text" id="read-question"></div>
+      </div>
+      <div class="answer-options" id="read-answers"></div>
+      <div class="feedback-card" id="read-feedback"></div>
+      <button class="next-btn" id="read-next" onclick="nextReadQ()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen results-screen" id="screen-results">
+    <div class="results-emoji" id="res-emoji">🌟</div>
+    <div class="results-title" id="res-title">Amazing!</div>
+    <div class="results-score" id="res-score">5 out of 5 correct</div>
+    <div class="xp-gained" id="res-xp">+50 XP earned!</div>
+    <div id="res-badges" style="margin:12px 0"></div>
+    <button class="home-btn" onclick="goHome()">🏠 Back to Home</button>
+    <button class="home-btn" style="background:var(--purple);margin-top:8px" onclick="playAgain()">⚡ Play Again</button>
+  </div>
+
+  <!-- PARENT -->
+  <div class="screen" id="screen-parent">
+    <div id="pin-screen" class="pin-screen">
+      <div class="pin-title">👩‍👧 Parent Check-in</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Enter PIN: 1234</div>
+      <div class="pin-dots">
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="pin-pad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key" onclick="pinKey('C')" style="font-size:14px">Clear</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key" onclick="pinKey('DEL')">⌫</button>
+      </div>
+    </div>
+    <div id="parent-dashboard" style="display:none;padding-bottom:80px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-family:'Fredoka One',cursive;font-size:20px">📊 Progress Report</div>
+        <button onclick="lockParent()" style="background:var(--pink-light);border:none;border-radius:10px;padding:6px 12px;font-size:12px;font-weight:800;color:var(--hot-pink);cursor:pointer">Lock 🔒</button>
+      </div>
+      <div class="parent-stat-grid">
+        <div class="parent-stat"><div class="parent-stat-num" style="color:var(--hot-pink)" id="p-streak">0</div><div class="parent-stat-label">Day Streak 🔥</div></div>
+        <div class="parent-stat"><div class="parent-stat-num" style="color:var(--gold)" id="p-stars">0</div><div class="parent-stat-label">Stars Earned ⭐</div></div>
+        <div class="parent-stat"><div class="parent-stat-num" style="color:var(--teal)" id="p-questions">0</div><div class="parent-stat-label">Questions Done</div></div>
+        <div class="parent-stat"><div class="parent-stat-num" style="color:var(--green)" id="p-accuracy">—</div><div class="parent-stat-label">Accuracy</div></div>
+      </div>
+      <div style="background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);margin:10px 0">
+        <div style="font-weight:800;font-size:14px;margin-bottom:10px">Skills Breakdown</div>
+        <div class="skill-row">
+          <div class="skill-name">× Times Tables</div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" id="p-drill-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--purple))"></div></div>
+          <div class="skill-pct" id="p-drill-pct" style="color:var(--teal)">0%</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-name">📝 Word Problems</div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" id="p-word-bar" style="width:0%"></div></div>
+          <div class="skill-pct" id="p-word-pct">0%</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-name">📖 Comprehension</div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" id="p-read-bar" style="width:0%;background:linear-gradient(90deg,var(--purple),var(--pink-mid))"></div></div>
+          <div class="skill-pct" id="p-read-pct" style="color:var(--purple)">0%</div>
+        </div>
+      </div>
+      <div style="background:var(--gold-light);border-radius:14px;padding:12px;border:1.5px solid var(--gold)">
+        <div style="font-weight:800;font-size:13px;color:#92400E;margin-bottom:4px">💡 Focus Area</div>
+        <div style="font-size:12px;color:#78350F" id="p-focus">Keep going — more sessions will unlock detailed insights!</div>
+      </div>
+      <div style="margin-top:14px;background:var(--card);border-radius:14px;padding:12px;border:1px solid var(--border)">
+        <div style="font-weight:800;font-size:13px;margin-bottom:8px">⚙️ Change PIN</div>
+        <input id="new-pin-input" type="number" maxlength="4" placeholder="New 4-digit PIN" style="width:100%;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;background:var(--bg)">
+        <button onclick="saveNewPin()" style="width:100%;padding:10px;background:var(--purple);color:white;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;margin-top:8px">Save PIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div style="font-family:'Fredoka One',cursive;font-size:22px;margin-bottom:14px;color:var(--hot-pink)">✨ My Profile</div>
+    <div class="settings-section">
+      <div class="settings-label">Your Name</div>
+      <input class="settings-input" id="name-input" type="text" placeholder="Enter your name" maxlength="20">
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Pick Your Avatar</div>
+      <div class="avatar-grid" id="avatar-grid"></div>
+    </div>
+    <button class="save-btn" onclick="saveSettings()">Save ✓</button>
+    <button onclick="navTo('home')" style="width:100%;padding:12px;background:none;border:1.5px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;margin-top:8px">Cancel</button>
+
+    <div style="margin-top:20px;background:#FEE2E2;border-radius:14px;padding:12px;border:1px solid #FCA5A5">
+      <div style="font-weight:800;font-size:13px;color:#B91C1C;margin-bottom:6px">⚠️ Reset All Progress</div>
+      <div style="font-size:12px;color:#B91C1C;margin-bottom:8px">This will erase all XP, stars, and badges. Cannot be undone.</div>
+      <button onclick="confirmReset()" style="background:#EF4444;color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">Reset Everything</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navTo('home')"><i class="ti ti-home"></i>Home</button>
+    <button class="nav-btn" id="nav-drill" onclick="startDrill()"><i class="ti ti-bolt"></i>Drill</button>
+    <button class="nav-btn" id="nav-reading" onclick="startReading()"><i class="ti ti-book"></i>Read</button>
+    <button class="nav-btn" id="nav-parent" onclick="navTo('parent')"><i class="ti ti-user"></i>Parent</button>
+    <button class="nav-btn" id="nav-settings" onclick="navTo('settings')"><i class="ti ti-star"></i>Me</button>
+  </nav>
+</div>
+
+<script>
+// ===================== CONSTANTS =====================
+const CLAUDE_API = "https://api.anthropic.com/v1/messages";
+const AVATARS = ['🦄','🐴','🐬','🦁','🐶','🐱','🦋','🌸','💎','👑','🌟','🎀'];
+const LEVELS = [
+  {xp:0,name:"Rising Star"},{xp:200,name:"Cheer Captain"},
+  {xp:500,name:"All-Star"},{xp:1000,name:"Animal Expert"},
+  {xp:2000,name:"Fashion Icon"},{xp:4000,name:"Quiz Queen"},
+  {xp:7000,name:"Legend"},{xp:11000,name:"4th Grade Master"}
+];
+const ALL_BADGES = [
+  {id:'speed1',icon:'⚡',name:'Speed Star',desc:'Get 3 drill answers right in a row'},
+  {id:'reader1',icon:'📖',name:'Bookworm',desc:'Complete a reading quest'},
+  {id:'streak3',icon:'🔥',name:'On Fire',desc:'3-day streak'},
+  {id:'perfect',icon:'💯',name:'Perfect!',desc:'Score 100% on any quiz'},
+  {id:'lion',icon:'🦁',name:'Lion Heart',desc:'Complete 10 sessions'},
+  {id:'diamond',icon:'💎',name:'Diamond',desc:'Reach Level 4'},
+  {id:'queen',icon:'👑',name:'Queen',desc:'Reach Level 6'},
+  {id:'master',icon:'🎓',name:'4th Grade Master',desc:'Reach max level'},
+];
+
+// ===================== STATE & STORAGE =====================
+const SAVE_KEY = 'gradequest_v2';
+let S = loadState();
+let drillTimer = null, currentMode = null, wpData = null, readData = null;
+let drillStreak = 0, drillCorrect = 0, drillTotal = 0, drillCorrectAns = 0, drillAnswer = '', drillTimeLeft = 10;
+let wordIndex = 0, wordCorrect = 0, readIndex = 0, readCorrect = 0;
+let pinBuffer = '';
+
+function defaultState() {
+  return {
+    name: 'Cheer Star', avatar: '🦄', xp: 0, stars: 0,
+    streak: 0, lastDate: '', badges: [],
+    drillTotal: 0, drillCorrect: 0, drillHighScore: 0,
+    wordTotal: 0, wordCorrect: 0,
+    readTotal: 0, readCorrect: 0,
+    sessions: 0, pin: '1234'
+  };
+}
+
+function loadState() {
+  try {
+    const d = localStorage.getItem(SAVE_KEY);
+    return d ? Object.assign(defaultState(), JSON.parse(d)) : defaultState();
+  } catch(e) { return defaultState(); }
+}
+
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch(e) {}
+}
+
+function checkStreak() {
+  const today = new Date().toDateString();
+  if (S.lastDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    S.streak = S.lastDate === yesterday ? S.streak + 1 : 1;
+    S.lastDate = today;
+    save();
+  }
+}
+
+// ===================== UI =====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + id);
+  if (nb) nb.classList.add('active');
+}
+
+function navTo(screen) {
+  clearInterval(drillTimer);
+  if (screen === 'settings') { renderSettings(); }
+  if (screen === 'parent') { pinBuffer = ''; updatePinDots(); document.getElementById('pin-screen').style.display='block'; document.getElementById('parent-dashboard').style.display='none'; }
+  showScreen(screen);
+}
+
+function goHome() {
+  clearInterval(drillTimer);
+  renderHome();
+  showScreen('home');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function renderHome() {
+  checkStreak();
+  document.getElementById('char-avatar').textContent = S.avatar;
+  document.getElementById('char-name').textContent = S.name;
+  document.getElementById('stat-streak').textContent = S.streak;
+  document.getElementById('stat-stars').textContent = S.stars;
+  document.getElementById('stat-badges').textContent = S.badges.length;
+  updateXPBar();
+  renderBadges();
+}
+
+function updateXPBar() {
+  let lvl = 0;
+  for (let i = LEVELS.length-1; i >= 0; i--) { if (S.xp >= LEVELS[i].xp) { lvl = i; break; } }
+  const nextXP = lvl < LEVELS.length-1 ? LEVELS[lvl+1].xp : S.xp + 1;
+  const curXP = LEVELS[lvl].xp;
+  const pct = Math.min(100, Math.round((S.xp - curXP) / (nextXP - curXP) * 100));
+  document.getElementById('xp-bar').style.width = pct + '%';
+  document.getElementById('xp-label').textContent = S.xp + ' / ' + nextXP + ' XP to next level';
+  document.getElementById('char-level').textContent = '⚡ Level ' + (lvl+1) + ' — ' + LEVELS[lvl].name;
+}
+
+function addXP(amount) {
+  S.xp += amount;
+  S.stars += Math.floor(amount / 5);
+  checkBadges();
+  save();
+  updateXPBar();
+  document.getElementById('stat-stars').textContent = S.stars;
+}
+
+function checkBadges() {
+  const earned = [];
+  if (drillStreak >= 3 && !S.badges.includes('speed1')) { S.badges.push('speed1'); earned.push('⚡ Speed Star'); }
+  if (S.streak >= 3 && !S.badges.includes('streak3')) { S.badges.push('streak3'); earned.push('🔥 On Fire'); }
+  if (S.sessions >= 10 && !S.badges.includes('lion')) { S.badges.push('lion'); earned.push('🦁 Lion Heart'); }
+  let lvl = 0; for (let i=LEVELS.length-1;i>=0;i--) { if (S.xp >= LEVELS[i].xp) { lvl=i; break; } }
+  if (lvl >= 3 && !S.badges.includes('diamond')) { S.badges.push('diamond'); earned.push('💎 Diamond'); }
+  if (lvl >= 5 && !S.badges.includes('queen')) { S.badges.push('queen'); earned.push('👑 Queen'); }
+  if (lvl >= 7 && !S.badges.includes('master')) { S.badges.push('master'); earned.push('🎓 4th Grade Master'); }
+  if (earned.length) { toast('New badge: ' + earned.join(', ')); document.getElementById('stat-badges').textContent = S.badges.length; }
+}
+
+function awardReadingBadge() {
+  if (!S.badges.includes('reader1')) { S.badges.push('reader1'); save(); toast('📖 New badge: Bookworm!'); document.getElementById('stat-badges').textContent = S.badges.length; }
+}
+
+function awardPerfect() {
+  if (!S.badges.includes('perfect')) { S.badges.push('perfect'); save(); toast('💯 New badge: Perfect!'); document.getElementById('stat-badges').textContent = S.badges.length; }
+}
+
+function renderBadges() {
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = ALL_BADGES.map(b => {
+    const has = S.badges.includes(b.id);
+    return '<div class="badge-item' + (has ? '' : ' locked') + '" title="' + b.desc + '"><div class="badge-icon">' + b.icon + '</div><div class="badge-name">' + b.name + '</div></div>';
+  }).join('');
+}
+
+// ===================== SETTINGS =====================
+function renderSettings() {
+  document.getElementById('name-input').value = S.name;
+  const grid = document.getElementById('avatar-grid');
+  grid.innerHTML = AVATARS.map(a =>
+    '<div class="avatar-opt' + (S.avatar===a?' selected':'') + '" onclick="selectAvatar(\'' + a + '\')">' + a + '</div>'
+  ).join('');
+}
+
+function selectAvatar(a) {
+  document.querySelectorAll('.avatar-opt').forEach(el => { el.classList.toggle('selected', el.textContent === a); });
+  S.avatar = a;
+}
+
+function saveSettings() {
+  const n = document.getElementById('name-input').value.trim();
+  if (n) S.name = n;
+  save(); renderHome(); navTo('home'); toast('Saved! ✨');
+}
+
+function confirmReset() {
+  if (confirm('Are you sure? This will erase ALL progress!')) {
+    localStorage.removeItem(SAVE_KEY);
+    S = defaultState(); save(); renderHome(); navTo('home'); toast('Progress reset.');
+  }
+}
+
+// ===================== SPEED DRILL =====================
+function startDrill() {
+  currentMode = 'drill';
+  drillStreak = 0; drillCorrect = 0; drillTotal = 0;
+  showScreen('drill');
+  document.getElementById('nav-drill').classList.add('active');
+  newDrillProblem();
+}
+
+function newDrillProblem() {
+  const a = Math.floor(Math.random()*12)+1;
+  const b = Math.floor(Math.random()*12)+1;
+  const easyDivisors = [2, 3, 4, 5, 10];
+  const useDiv = Math.random() > 0.4;
+  if (useDiv) {
+    const divisor = easyDivisors[Math.floor(Math.random()*easyDivisors.length)];
+    const quotient = Math.floor(Math.random()*10)+1;
+    const product = divisor * quotient;
+    drillCorrectAns = quotient;
+    document.getElementById('drill-problem').textContent = product + ' ÷ ' + divisor + ' = ?';
+  } else {
+    drillCorrectAns = a * b;
+    document.getElementById('drill-problem').textContent = a + ' × ' + b + ' = ?';
+  }
+  drillAnswer = '';
+  document.getElementById('drill-input').textContent = '_';
+  document.getElementById('drill-feedback').className = 'feedback-card';
+  document.getElementById('drill-streak-label').textContent = 'Streak: ' + drillStreak + ' 🔥 | High Score: ' + S.drillHighScore;
+  document.getElementById('drill-score-label').textContent = 'Score: ' + drillCorrect;
+  resetTimer();
+}
+
+function resetTimer() {
+  clearInterval(drillTimer);
+  drillTimeLeft = 15;
+  updateTimerUI();
+  drillTimer = setInterval(() => {
+    drillTimeLeft--;
+    updateTimerUI();
+    if (drillTimeLeft <= 0) {
+      clearInterval(drillTimer);
+      showDrillFeedback(false, 'Time! Answer was ' + drillCorrectAns);
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const offset = 163.4 * (1 - drillTimeLeft/15);
+  document.getElementById('timer-circle').style.strokeDashoffset = offset;
+  document.getElementById('timer-num').textContent = drillTimeLeft;
+  document.getElementById('timer-circle').style.stroke = drillTimeLeft > 7 ? '#FFB800' : '#EF4444';
+}
+
+function drillKey(k) {
+  if (k==='DEL') { drillAnswer = drillAnswer.slice(0,-1); }
+  else if (drillAnswer.length < 3) { drillAnswer += k; }
+  document.getElementById('drill-input').textContent = drillAnswer || '_';
+}
+
+function drillSubmit() {
+  if (!drillAnswer) return;
+  showDrillFeedback(parseInt(drillAnswer) === drillCorrectAns, null);
+}
+
+function showDrillFeedback(correct, msg) {
+  clearInterval(drillTimer);
+  drillTotal++;
+  const fb = document.getElementById('drill-feedback');
+  if (correct) {
+    drillStreak++; drillCorrect++;
+    if (drillCorrect > S.drillHighScore) S.drillHighScore = drillCorrect;
+    addXP(10 + drillStreak * 2);
+    fb.textContent = '✅ Correct! ' + (drillStreak > 1 ? '🔥 ' + drillStreak + ' in a row!' : 'Keep going!');
+    fb.className = 'feedback-card correct show';
+    checkBadges();
+  } else {
+    drillStreak = 0;
+    fb.textContent = '❌ ' + (msg || 'The answer was ' + drillCorrectAns);
+    fb.className = 'feedback-card wrong show';
+  }
+  if (drillTotal >= 10) {
+    S.drillTotal += drillTotal; S.drillCorrect += drillCorrect; S.sessions++; save();
+    setTimeout(() => showResults('drill', drillCorrect, 10, drillCorrect * 10 + drillStreak * 5), 1200);
+  } else {
+    setTimeout(() => newDrillProblem(), 1400);
+  }
+}
+
+// ===================== WORD PROBLEMS =====================
+const WP_BANK = [
+  {question:"The Jackets Elite cheer team needs to arrange 48 hair bows equally into 6 boxes. How many bows go in each box?",hint:"💡 Divide total bows by number of boxes.",choices:["6","8","7","9"],answerIndex:1},
+  {question:"Barbie's dream stable has 9 stalls, each holding 7 horses. If every stall is full, how many horses are there?",hint:"💡 Multiply stalls by horses per stall.",choices:["54","63","56","72"],answerIndex:1},
+  {question:"A rescue shelter took in 56 animals over 8 weeks, the same number each week. How many came each week?",hint:"💡 Divide total animals by weeks.",choices:["6","9","7","8"],answerIndex:2},
+  {question:"At a cheer competition, 6 squads each did 4 routines using 3 props each. How many props were used in all?",hint:"💡 Find total routines first, then multiply by props.",choices:["48","60","72","36"],answerIndex:2},
+  {question:"Barbie baked 84 cupcakes for a fashion show and put them on trays holding 12 each. How many trays did she fill?",hint:"💡 Divide cupcakes by tray size.",choices:["6","8","7","9"],answerIndex:2},
+  {question:"The cheer squad practiced 5 days a week for 8 weeks before their big competition. How many practice days was that in all?",hint:"💡 Multiply days per week by number of weeks.",choices:["35","45","40","50"],answerIndex:2},
+  {question:"A dolphin at the marine rescue center eats 9 pounds of fish every day. How many pounds does it eat in 7 days?",hint:"💡 Multiply pounds per day by number of days.",choices:["56","54","63","72"],answerIndex:2},
+  {question:"Barbie has 72 outfits to display in her boutique. She hangs them equally across 8 racks. How many outfits are on each rack?",hint:"💡 Divide total outfits by number of racks.",choices:["8","9","7","6"],answerIndex:1},
+  {question:"At the animal shelter there are 4 kennels with 6 dogs in each. How many dogs are at the shelter in all?",hint:"💡 Multiply kennels by dogs per kennel.",choices:["18","20","24","28"],answerIndex:2},
+  {question:"The cheer team needs 3 rhinestones for each letter on their uniforms. If there are 11 letters on a uniform, how many rhinestones does one uniform need?",hint:"💡 Multiply rhinestones by number of letters.",choices:["30","33","36","27"],answerIndex:1},
+  {question:"Barbie is sewing sequins onto 5 dresses. Each dress needs 12 sequins. How many sequins does she need in all?",hint:"💡 Multiply dresses by sequins per dress.",choices:["55","50","60","65"],answerIndex:2},
+  {question:"A horse rescue farm has 63 bales of hay to last 7 days equally. How many bales are used each day?",hint:"💡 Divide total bales by number of days.",choices:["7","8","9","6"],answerIndex:2},
+  {question:"There are 8 girls on a cheer stunt team and each needs 4 practice sessions per week. How many total practice sessions happen each week?",hint:"💡 Multiply number of girls by sessions each.",choices:["24","28","32","36"],answerIndex:2},
+  {question:"Barbie drove past 9 pet stores and each store had 5 puppies in the window. How many puppies did she see in all?",hint:"💡 Multiply stores by puppies per store.",choices:["40","35","45","50"],answerIndex:2},
+  {question:"A cheerleader collected 60 signatures on a banner in 5 days, the same number each day. How many signatures per day?",hint:"💡 Divide total signatures by number of days.",choices:["10","15","12","8"],answerIndex:2},
+  {question:"The zoo has 4 sections and each section has 8 animals. How many animals are in the zoo in all?",hint:"💡 Multiply sections by animals per section.",choices:["24","28","32","36"],answerIndex:2},
+  {question:"Barbie needs 6 buttons for each jacket in her collection. She has 11 jackets. How many buttons does she need?",hint:"💡 Multiply buttons per jacket by number of jackets.",choices:["60","66","72","55"],answerIndex:1},
+  {question:"The cheer team runs 3 laps to warm up at each practice. If they have 9 practices this month, how many laps do they run in all?",hint:"💡 Multiply laps per practice by number of practices.",choices:["21","24","27","30"],answerIndex:2},
+  {question:"A sea turtle rescue center released 48 turtles over 4 weeks, the same number each week. How many turtles were released each week?",hint:"💡 Divide total turtles by number of weeks.",choices:["10","14","12","8"],answerIndex:2},
+  {question:"Barbie is packing gift bags for her fashion show. She puts 7 items in each bag and has 11 bags to fill. How many items does she need in all?",hint:"💡 Multiply items per bag by number of bags.",choices:["70","77","66","88"],answerIndex:1}
+];
+
+async function startWordProblems() {
+  currentMode = 'word';
+  wordIndex = 0; wordCorrect = 0;
+  wpData = null;
+  showScreen('word');
+  document.getElementById('word-ai-loading').style.display = 'block';
+  document.getElementById('word-content').style.display = 'none';
+  try {
+    const resp = await fetch(CLAUDE_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system:'You are a 4th grade math teacher. Return ONLY valid JSON, no markdown fences. Generate 5 word problems about cheerleading, animals (horses, dolphins, dogs), or Barbie/fashion. Each requires multiplication or division of numbers up to 12x12. Format: {"problems":[{"question":"...","hint":"Think about...","choices":["A","B","C","D"],"answerIndex":0}]}. Vary which index is the answer. Make the problems fun and specific.',
+        messages:[{role:'user',content:'Generate 5 fun 3rd-grade level word problems. Themes: cheerleading, animal rescue, Barbie fashion. Use multiplication and division facts up to 12x12.'}]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    wpData = JSON.parse(text.replace(/```json|```/g,'').trim()).problems;
+  } catch(e) {
+    const shuffled = [...WP_BANK].sort(() => Math.random() - 0.5);
+    wpData = shuffled.slice(0, 5);
+  }
+  document.getElementById('word-ai-loading').style.display = 'none';
+  document.getElementById('word-content').style.display = 'block';
+  renderWordProblem();
+}
+
+function renderWordProblem() {
+  if (wordIndex >= 5) {
+    S.wordTotal += 5; S.wordCorrect += wordCorrect; S.sessions++; save();
+    showResults('word', wordCorrect, 5, wordCorrect * 15);
+    return;
+  }
+  const q = wpData[wordIndex];
+  document.getElementById('word-prog').style.width = (wordIndex/5*100) + '%';
+  document.getElementById('word-count').textContent = 'Question ' + (wordIndex+1) + ' of 5';
+  document.getElementById('word-question').textContent = q.question;
+  document.getElementById('word-hint').textContent = q.hint || '';
+  const container = document.getElementById('word-answers');
+  container.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = '<span class="answer-letter">' + letters[i] + '</span>' + choice;
+    btn.onclick = () => selectWordAnswer(i, q.answerIndex !== undefined ? q.answerIndex : q.ans);
+    container.appendChild(btn);
+  });
+  document.getElementById('word-feedback').className = 'feedback-card';
+  document.getElementById('word-next').className = 'next-btn';
+}
+
+function selectWordAnswer(chosen, correct) {
+  document.querySelectorAll('#word-answers .answer-btn').forEach((btn,i) => {
+    btn.disabled = true;
+    if (i===correct) btn.classList.add('correct');
+    else if (i===chosen) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('word-feedback');
+  if (chosen===correct) { wordCorrect++; addXP(15); fb.textContent='🌟 Perfect! Great math thinking!'; fb.className='feedback-card correct show'; }
+  else { fb.textContent='❌ Not quite — look at the highlighted answer!'; fb.className='feedback-card wrong show'; }
+  document.getElementById('word-next').className = 'next-btn show';
+}
+
+function nextWord() { wordIndex++; renderWordProblem(); }
+
+// ===================== READING =====================
+const READ_BANK = [
+  {
+    title:"Luna the Rescue Horse",
+    passage:"Luna was a beautiful chestnut horse found wandering alone in a field. The rescue center named her Luna because she had a white moon-shaped mark on her forehead. Every day, a girl named Maya visited and brought her carrots. Maya learned that horses communicate with their ears, eyes, and tails. When Luna's ears pointed forward, she was curious and happy. When they went flat back, she was scared. Maya studied horse behavior to become a better friend to Luna. After three months of care and kindness, Luna was healthy enough to be adopted. Maya begged her parents until they said yes. Luna came home to a warm stable and a best friend forever.",
+    questions:[
+      {question:"Why was the horse named Luna?",choices:["She only came out at night","She had a moon-shaped mark on her forehead","She was found under the moon","She ran in the moonlight"],answerIndex:1},
+      {question:"What does it mean when a horse's ears point forward?",choices:["The horse is tired","The horse is angry","The horse is curious and happy","The horse wants food"],answerIndex:2},
+      {question:"What is the main idea of this story?",choices:["Horses are dangerous animals","Patience and kindness can help an animal heal and find a home","Maya wanted a horse for Christmas","Rescue centers are always full of horses"],answerIndex:1}
+    ]
+  },
+  {
+    title:"Splash Saves the Day",
+    passage:"Chloe was swimming at the beach when she spotted a dolphin tangled in a fishing net near the rocks. The dolphin made short, sharp clicks — a sign it was frightened. Chloe knew that dolphins use sound called echolocation to find their way around, but the net had them completely stuck. She swam carefully to the rocks and used a small pocketknife from her beach bag to cut the net away piece by piece. It took twenty long minutes, but finally the dolphin was free. It circled Chloe twice, leaping into the air, before swimming back out to sea. Chloe named the dolphin Splash. She later learned that bottlenose dolphins can live up to 40 years in the wild. She hoped Splash would have all 40 of them.",
+    questions:[
+      {question:"What was the dolphin tangled in?",choices:["Seaweed","A fishing net","A rope","A beach umbrella"],answerIndex:1},
+      {question:"In this story, the word echolocation means —",choices:["a type of dolphin food","using sound to find the way around","swimming very fast","a dolphin's home in the ocean"],answerIndex:1},
+      {question:"What is the main idea of this story?",choices:["Beaches are dangerous for dolphins","A brave girl rescued a dolphin and set it free","Dolphins can live for 40 years","Chloe loved to swim at the beach"],answerIndex:1}
+    ]
+  },
+  {
+    title:"The Big Cheer Comeback",
+    passage:"The Riverside Rockets cheer team had not won a trophy in three years. Their coach, Ms. Tina, gathered the team and said, 'This year we compete with heart, not just skill.' The girls practiced their tumbling every day after school. Their flyer, Jade, had been afraid of the basket toss since she fell during practice last spring. But Jade worked with her bases every afternoon until the fear faded and her confidence grew. On competition day, the gym was packed and loud. When the music started, the Rockets hit every stunt perfectly. Jade soared through the air and landed in her bases' arms without a wobble. The crowd roared. When the scores were read, the Rockets had won first place. Ms. Tina wiped a tear from her eye and said, 'That is what heart looks like.'",
+    questions:[
+      {question:"Why was Jade afraid of the basket toss?",choices:["She thought it was too easy","She had fallen during practice last spring","She did not trust her bases","She was new to the team"],answerIndex:1},
+      {question:"What does the word confidence mean in this story?",choices:["being scared and nervous","believing in yourself and your ability","practicing every single day","listening to your coach"],answerIndex:1},
+      {question:"What lesson does this story teach?",choices:["Winning is the most important thing in cheer","Practicing tumbling makes you a better flyer","Hard work and believing in yourself can lead to success","Ms. Tina was a very strict coach"],answerIndex:2}
+    ]
+  },
+  {
+    title:"Barbie Designs for Good",
+    passage:"Barbie had always loved fashion, but this year she wanted her designs to matter. She decided to create a special clothing line to raise money for the local animal shelter. She sketched gowns inspired by the colors of tropical fish and jumpsuits that reminded her of a peacock's feathers. Each piece told a story from the natural world. Barbie worked late into the night cutting fabric and hand-sewing details. On the night of her fashion show, the audience gasped as each model walked out. By the end of the evening, every piece had sold. The money raised was enough to build a new outdoor play area for the shelter's dogs and cats. Barbie smiled as she thought about the animals that would soon run and play in the sunshine. Fashion, she decided, could change the world.",
+    questions:[
+      {question:"What inspired the designs in Barbie's clothing line?",choices:["Famous paintings","Colors and animals from the natural world","Her favorite movies","Patterns from old magazines"],answerIndex:1},
+      {question:"What does the word gasped mean in this story?",choices:["clapped loudly","fell asleep","took a quick breath in surprise","walked out the door"],answerIndex:2},
+      {question:"What is the main idea of this story?",choices:["Barbie wanted to become a famous designer","Barbie used her talent for fashion to help animals in need","Animal shelters need a lot of money to survive","Sewing clothes late at night is very difficult"],answerIndex:1}
+    ]
+  }
+];
+let lastReadIndex = -1;
+
+async function startReading() {
+  currentMode = 'reading';
+  readIndex = 0; readCorrect = 0; readData = null;
+  showScreen('reading');
+  document.getElementById('nav-reading').classList.add('active');
+  document.getElementById('read-ai-loading').style.display = 'block';
+  document.getElementById('read-content').style.display = 'none';
+  try {
+    const topics = ['a cheer team preparing for a big competition','a girl who rescues a wild dolphin','a horse learning to trust again at an animal sanctuary','Barbie designing a fashion line for a charity'];
+    const topic = topics[Math.floor(Math.random()*topics.length)];
+    const resp = await fetch(CLAUDE_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system:'You are a 3rd-4th grade reading teacher. Return ONLY valid JSON, no markdown. Write an engaging story of 150-180 words at a mid-3rd grade reading level. Then write 3 comprehension questions: (1) detail recall, (2) vocabulary in context, (3) main idea. Format: {"title":"...","passage":"...","questions":[{"question":"...","choices":["A","B","C","D"],"answerIndex":0}]}',
+        messages:[{role:'user',content:'Write a story about ' + topic + '. Make it exciting for a girl entering 4th grade who loves animals, cheer, and fashion.'}]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    readData = JSON.parse(text.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    let pick;
+    do { pick = Math.floor(Math.random() * READ_BANK.length); } while (pick === lastReadIndex && READ_BANK.length > 1);
+    lastReadIndex = pick;
+    readData = READ_BANK[pick];
+  }
+  document.getElementById('read-ai-loading').style.display = 'none';
+  document.getElementById('read-content').style.display = 'block';
+  document.getElementById('read-title').textContent = readData.title;
+  document.getElementById('read-passage').textContent = readData.passage;
+  renderReadQuestion();
+}
+
+function renderReadQuestion() {
+  if (readIndex >= readData.questions.length) {
+    S.readTotal += readData.questions.length; S.readCorrect += readCorrect; S.sessions++; save();
+    awardReadingBadge();
+    showResults('reading', readCorrect, readData.questions.length, readCorrect * 20);
+    return;
+  }
+  const q = readData.questions[readIndex];
+  const total = readData.questions.length;
+  document.getElementById('read-prog').style.width = (readIndex/total*100) + '%';
+  document.getElementById('read-count').textContent = 'Question ' + (readIndex+1) + ' of ' + total;
+  document.getElementById('read-question').textContent = q.question;
+  const container = document.getElementById('read-answers');
+  container.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = '<span class="answer-letter">' + letters[i] + '</span>' + choice;
+    btn.onclick = () => selectReadAnswer(i, q.answerIndex !== undefined ? q.answerIndex : q.ans);
+    container.appendChild(btn);
+  });
+  document.getElementById('read-feedback').className = 'feedback-card';
+  document.getElementById('read-next').className = 'next-btn';
+}
+
+function selectReadAnswer(chosen, correct) {
+  document.querySelectorAll('#read-answers .answer-btn').forEach((btn,i) => {
+    btn.disabled = true;
+    if (i===correct) btn.classList.add('correct');
+    else if (i===chosen) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('read-feedback');
+  if (chosen===correct) { readCorrect++; addXP(20); fb.textContent='📚 Great reading! You found the answer!'; fb.className='feedback-card correct show'; }
+  else { fb.textContent='❌ Check the passage again — the clue is in there!'; fb.className='feedback-card wrong show'; }
+  document.getElementById('read-next').className = 'next-btn show';
+}
+
+function nextReadQ() { readIndex++; renderReadQuestion(); }
+
+// ===================== RESULTS =====================
+function showResults(mode, correct, total, xpEarned) {
+  clearInterval(drillTimer);
+  const pct = Math.round(correct/total*100);
+  if (pct===100) awardPerfect();
+  document.getElementById('res-emoji').textContent = pct===100?'🏆':pct>=80?'🌟':pct>=60?'😊':'💪';
+  document.getElementById('res-title').textContent = pct===100?'Perfect Score!':pct>=80?'Amazing Work!':pct>=60?'Good Job!':'Keep Practicing!';
+  document.getElementById('res-score').textContent = correct + ' out of ' + total + ' correct (' + pct + '%)';
+  document.getElementById('res-xp').textContent = '+' + xpEarned + ' XP earned!';
+  addXP(xpEarned);
+  const badgesEl = document.getElementById('res-badges');
+  badgesEl.innerHTML = '';
+  if (pct===100) badgesEl.innerHTML += '<div class="badge-earned-item">⭐ Perfect Score!</div>';
+  if (mode==='drill' && drillStreak>=5) badgesEl.innerHTML += '<div class="badge-earned-item">🔥 ' + drillStreak + ' Streak!</div>';
+  currentMode = mode;
+  showScreen('results');
+}
+
+function playAgain() {
+  if (currentMode==='drill') startDrill();
+  else if (currentMode==='word') startWordProblems();
+  else if (currentMode==='reading') startReading();
+}
+
+// ===================== PARENT =====================
+function pinKey(k) {
+  if (k==='C') { pinBuffer=''; updatePinDots(); return; }
+  if (k==='DEL') { pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); return; }
+  if (pinBuffer.length>=4) return;
+  pinBuffer += k;
+  updatePinDots();
+  if (pinBuffer.length===4) {
+    if (pinBuffer===S.pin) {
+      document.getElementById('pin-screen').style.display='none';
+      document.getElementById('parent-dashboard').style.display='block';
+      renderParentDash();
+    } else {
+      pinBuffer=''; updatePinDots(); toast('Wrong PIN — try again');
+    }
+  }
+}
+
+function updatePinDots() {
+  for (let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('filled', i < pinBuffer.length);
+}
+
+function lockParent() {
+  pinBuffer=''; updatePinDots();
+  document.getElementById('pin-screen').style.display='block';
+  document.getElementById('parent-dashboard').style.display='none';
+}
+
+function renderParentDash() {
+  document.getElementById('p-streak').textContent = S.streak;
+  document.getElementById('p-stars').textContent = S.stars;
+  const totalQ = S.drillTotal + S.wordTotal + S.readTotal;
+  const totalC = S.drillCorrect + S.wordCorrect + S.readCorrect;
+  document.getElementById('p-questions').textContent = totalQ;
+  document.getElementById('p-accuracy').textContent = totalQ > 0 ? Math.round(totalC/totalQ*100) + '%' : '—';
+  const dp = S.drillTotal > 0 ? Math.round(S.drillCorrect/S.drillTotal*100) : 0;
+  const wp = S.wordTotal > 0 ? Math.round(S.wordCorrect/S.wordTotal*100) : 0;
+  const rp = S.readTotal > 0 ? Math.round(S.readCorrect/S.readTotal*100) : 0;
+  document.getElementById('p-drill-bar').style.width = dp + '%';
+  document.getElementById('p-drill-pct').textContent = dp + '%';
+  document.getElementById('p-word-bar').style.width = wp + '%';
+  document.getElementById('p-word-pct').textContent = wp + '%';
+  document.getElementById('p-read-bar').style.width = rp + '%';
+  document.getElementById('p-read-pct').textContent = rp + '%';
+  let focus = 'Keep going — more sessions will unlock detailed insights!';
+  if (totalQ > 10) {
+    const low = Math.min(dp, wp, rp);
+    if (low === dp) focus = 'Times table fluency is still building — encourage the Speed Drill daily!';
+    else if (low === wp) focus = 'Word problems are the current growth area — try 2-3 sessions this week.';
+    else focus = 'Reading comprehension is coming along — encourage her to re-read passages carefully.';
+    if (dp >= 80 && wp >= 80 && rp >= 80) focus = 'She is crushing it across all skills! Ready for 4th grade! 🎉';
+  }
+  document.getElementById('p-focus').textContent = focus;
+}
+
+function saveNewPin() {
+  const val = document.getElementById('new-pin-input').value.trim();
+  if (/^\d{4}$/.test(val)) { S.pin = val; save(); toast('PIN updated! 🔒'); document.getElementById('new-pin-input').value=''; }
+  else { toast('Enter exactly 4 digits'); }
+}
+
+// ===================== INIT =====================
+checkStreak();
+renderHome();
+</script>
+</body>
+</html>
